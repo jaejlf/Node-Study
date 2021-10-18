@@ -43,3 +43,11 @@ app.post('/add', function (req, res) {
         });
     });
 });
+
+app.delete('/delete', function (req, res) {
+    req.body._id = parseInt(req.body._id);
+    db.collection('post').deleteOne(req.body, function (에러, 결과) {
+        console.log('삭제완료');
+        res.status(200).send({ message: '성공' });
+    });
+})
