@@ -47,7 +47,15 @@ app.post('/add', function (req, res) {
 app.delete('/delete', function (req, res) {
     req.body._id = parseInt(req.body._id);
     db.collection('post').deleteOne(req.body, function (에러, 결과) {
+        db.collection('counter').updateOne({ name: '게시물 갯수' }, { $inc: { totalPost: -1 } }, function (에러, 결과) {});
         console.log('삭제완료');
         res.status(200).send({ message: '성공' });
+    });
+})
+
+app.get('/detail/:id', function (req, res) {
+    db.collection('post').findOne({ _id: parseInt(req.params.id) }, function (에러, 결과) {
+        console.log(결과);
+        req.render('detail.ejs', { data: 결과 });
     });
 })
