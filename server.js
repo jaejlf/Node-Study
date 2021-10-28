@@ -1,10 +1,16 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const MongoClient = require('mongodb').MongoClient
-const methodOverride = require('method-override')
-app.use(methodOverride('_method'))
+const MongoClient = require('mongodb').MongoClient;
+const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
 
+app.use(session({ secret: '비밀코드', resave: true, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
 var db;
@@ -71,7 +77,58 @@ app.get('/edit/:id', function (요청, 응답) {
 
 app.put('/edit', function (요청, 응답) {
     db.collection('post').updateOne({ _id: parseInt(요청.body.id) }, { $set: { 제목: 요청.body.title, 날짜: 요청.body.date } }, function (에러, 결과) {
-        console.log('수정완료')
-        응답.redirect('/list')
+        console.log('수정완료');
+        응답.redirect('/list');
     });
+});
+
+app.get('/login', function (요청, 응답) {
+    응답.render('login.ejs');
+});
+
+app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }), function (요청, 응답) {
+    응답.redirect('/');
+});
+
+app.get('/mypage', 로그인했니, function (요청, 응답) {
+    console.log(요청.user);
+    응답.render('mypage.ejs', {사용자: 요청.user});
+});
+
+function 로그인했니(요청, 응답, next) {
+    if (요청.user) {
+        next();
+    } else {
+        응답.send('로그인X')
+    }
+}
+
+passport.use(new LocalStrategy({
+    usernameField: 'id',
+    passwordField: 'pw',
+    session: true,
+    passReqToCallback: false,
+}, function (입력한아이디, 입력한비번, done) {
+    //console.log(입력한아이디, 입력한비번);
+    db.collection('login').findOne({ id: 입력한아이디 }, function (에러, 결과) {
+        if (에러) return done(에러)
+        if (!결과) return done(null, false, { message: '존재하지않는 아이디요' })
+        if (입력한비번 == 결과.pw) {
+            return done(null, 결과)
+        } else {
+            return done(null, false, { message: '비번틀렸어요' })
+        }
+    })
+}));
+
+//로그인 성공 시 세선 저장 코드
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+//마이페이지 접속 시 실행 (user 누군지 찾는)
+passport.deserializeUser(function (아이디, done) {
+    db.collection('login').findOne({ id: 아이디 }, function (에러, 결과) {
+        done(null, 결과);
+    })
 });
