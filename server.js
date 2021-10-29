@@ -1,3 +1,6 @@
+//import dotenv from 'dotenv'
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -14,7 +17,7 @@ app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
 var db;
-MongoClient.connect('mongodb+srv://id:<password>@cluster0.h0sge.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useUnifiedTopology: true }, function (에러, client) {
+MongoClient.connect('mongodb+srv://' + process.env.DATABASE_USERNAME + ':' + process.env.DATABASE_PASSWORD + '@cluster0.h0sge.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useUnifiedTopology: true }, function (에러, client) {
     if (에러) return console.log(에러);
     db = client.db('todoapp');
     app.listen(8080, function () {
@@ -92,7 +95,7 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }),
 
 app.get('/mypage', 로그인했니, function (요청, 응답) {
     console.log(요청.user);
-    응답.render('mypage.ejs', {사용자: 요청.user});
+    응답.render('mypage.ejs', { 사용자: 요청.user });
 });
 
 function 로그인했니(요청, 응답, next) {
