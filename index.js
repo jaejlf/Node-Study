@@ -10,7 +10,7 @@ app.set('view engine', 'ejs')
 const Database = require("@replit/database")
 const db = new Database()
 
-const port = 8080
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`${port} 번 포트에 연결 중 ...`);
 })
