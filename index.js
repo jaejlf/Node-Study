@@ -6,14 +6,26 @@ app.use(express.urlencoded({extended : true}))
 app.use(express.static(__dirname + '/views'));
 app.set('view engine', 'ejs')
 
-const Database = require("@replit/database")
-const db = new Database()
-
-//const port = 8080
 var port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`${port} 번 포트에 연결 중 ...`);
 })
+
+let dataArr = [
+  {
+  name: "큐시즘",
+  email: "kusitms@mmm.mmm",
+  description: "HI !"
+  },{
+    name: "백엔드",
+    email: "backend@mmm.mmm",
+    description: "studying"
+  },{
+    name: "세션",
+    email: "session@mmm.mmm",
+    description: "서버 배포 해보는 중"
+  }
+]
 
 app.get('/', function (req, res) {
   res.render('index.ejs');
@@ -24,60 +36,24 @@ app.get('/write', function (req, res) {
 });
 
 app.get('/list', function (req, res) {
-  var dataArr = [];
-  var cnt = 0;
-
-  db.list().then(keys => {    
-    keys.forEach(element => {
-      db.get(element).then(value => {
-        dataArr.push({
-          name: element,
-          email: value.email,
-          description: value.description
-        });
-        
-        cnt++;
-        if(cnt == keys.length){
-          //console.log(dataArr)
-          res.render('list.ejs', { posts : dataArr })
-        }
-      });
-    });
-  });
+  res.render('list.ejs', { posts : dataArr })
 });
 
 app.post('/add', function (req, res) {
-  var key = req.body.name;
-  var mydata = {
+
+  dataArr.push({
+    name: req.body.name,
     email: req.body.email,
     description: req.body.description
-  }
-
-  //db.set(key, mydata).then(() => {});
-  //res.send('데이터 전송 완료');
-
-  //HTTP status 코드 추가
-  if(key == ""){
-    res.status(400).json({message: "name 오류"})
-  } else{
-    db.set(key, mydata).then(() => {});
-    res.send('데이터 전송 완료');
-  }
+  })
+  res.send('데이터 전송 완료');
 });
 
 app.delete('/delete', function(req, res){
-	  console.log(req.body.name) //.ejs에서 보낸, data에 들어있는 값  
-    db.delete(req.body.name).then(() => {
-      db.list().then(keys => {
-        console.log(keys);
-        console.log('삭제 완료');
-      });
-   });
+  dataArr.pop();
+  console.log('삭제 완료');
 })
 
-app.get('/keyList', function(req, res){
-  db.list().then(keys => {
-    res.status(200).json(keys);
-    res.end();
-  });
+app.get('/dataList', function(req, res){
+  res.status(200).json(dataArr);
 })
