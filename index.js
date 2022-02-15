@@ -6,11 +6,10 @@ app.use(express.urlencoded({extended : true}))
 app.use(express.static(__dirname + '/views'));
 app.set('view engine', 'ejs')
 
-//var db = require('./database');
 const Database = require("@replit/database")
 const db = new Database()
 
-const port = process.env.PORT || 8080;
+const port = 8080
 app.listen(port, () => {
   console.log(`${port} 번 포트에 연결 중 ...`);
 })
@@ -53,8 +52,16 @@ app.post('/add', function (req, res) {
     description: req.body.description
   }
 
-  db.set(key, mydata).then(() => {});
-  res.send('데이터 전송 완료');
+  //db.set(key, mydata).then(() => {});
+  //res.send('데이터 전송 완료');
+
+  //HTTP status 코드 추가
+  if(key == ""){
+    res.status(400).json({message: "name 오류"})
+  } else{
+    db.set(key, mydata).then(() => {});
+    res.status(200).json({message: '데이터 전송 완료'});
+  }
 });
 
 app.delete('/delete', function(req, res){
@@ -65,4 +72,11 @@ app.delete('/delete', function(req, res){
         console.log('삭제 완료');
       });
    });
+})
+
+app.get('/keyList', function(req, res){
+  db.list().then(keys => {
+    res.status(200).json(keys);
+    res.end();
+  });
 })
