@@ -11,26 +11,26 @@
 </head>
 
 <body>
-    <%- include('nav.html')%>
+    <%- include('nav.html') %>
 
     <div class="row justify-content-center mt-5">
         <div class="col-lg-8 col-xl-7">
-            <h3 class="page-section-heading text-center text-uppercase text-secondary mt-5"><strong>자기소개 작성하기</strong>
+            <h3 class="page-section-heading text-center text-uppercase mt-5"><strong>자기소개 작성하기</strong>
             </h3>
             <br>
             <div class="row justify-content-center">
                 <form action="/add" method="POST">
-                    <!-- Name input-->
+                    <!-- Name input -->
                     <div class="form-floating mb-3">
                         <input class="form-control" name="name" type="text" />
                         <label for="name">Name</label>
                     </div>
-                    <!-- Email address input-->
+                    <!-- Email address input -->
                     <div class="form-floating mb-3">
                         <input class="form-control" name="email" type="text" />
                         <label for="name">Email</label>
                     </div>
-                    <!-- Description input-->
+                    <!-- Description input -->
                     <div class="form-floating mb-3">
                         <textarea class="form-control" name="description" type="text" style="height: 10rem"
                             data-sb-validations="required"></textarea>

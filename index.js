@@ -61,7 +61,7 @@ app.post('/add', function (req, res) {
     res.status(400).json({message: "name 오류"})
   } else{
     db.set(key, mydata).then(() => {});
-    res.status(200).json({message: '데이터 전송 완료'});
+    res.send('데이터 전송 완료');
   }
 });
 
