@@ -17,7 +17,7 @@ app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 
 var db;
-MongoClient.connect('mongodb+srv://' + process.env.DATABASE_USERNAME + ':' + process.env.DATABASE_PASSWORD + '@cluster0.h0sge.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useUnifiedTopology: true }, function (에러, client) {
+MongoClient.connect(process.env.MONGODB_URL, { useUnifiedTopology: true }, function (에러, client) {
     if (에러) return console.log(에러);
     db = client.db('todoapp');
     app.listen(8080, function () {
@@ -115,7 +115,7 @@ passport.use(new LocalStrategy({
     //console.log(입력한아이디, 입력한비번);
     db.collection('login').findOne({ id: 입력한아이디 }, function (에러, 결과) {
         if (에러) return done(에러)
-        if (!결과) return done(null, false, { message: '존재하지않는 아이디요' })
+        if (!결과) return done(null, false, { message: '존재하지않는 아이디' })
         if (입력한비번 == 결과.pw) {
             return done(null, 결과)
         } else {
