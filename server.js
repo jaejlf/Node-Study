@@ -10,6 +10,28 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 
+//multer 세팅 (파일 전송 위한)
+let multer = require('multer');
+var storage = multer.diskStorage({
+    destinationL: function (req, file, cb) {
+        cb(null, './public/image');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    },
+    fileFilter: function (req, file, callback) {
+        var ext = path.extname(file.originalname);
+        if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+            return callback(new Error('PNG, JPG만 업로드하세요'))
+        }
+        callback(null, true)
+    },
+    limits: {
+        fileSize: 1024 * 1024
+    }
+});
+var upload = multer({ storage: storage });
+
 app.use(session({ secret: '비밀코드', resave: true, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -83,6 +105,19 @@ app.put('/edit', function (요청, 응답) {
         console.log('수정완료');
         응답.redirect('/list');
     });
+});
+
+app.get('/upload', function (요청, 응답) {
+    응답.render('upload.ejs');
+});
+
+
+app.post('/upload', upload.single('profileImg'), function (요청, 응답) {
+    응답.send('업로드 완료');
+});
+
+app.get('/image/:imgName', function(요청, 응답){
+    응답.sendFile(__dirname + '/pulic/image/' + 요청.params.imgName);
 });
 
 app.get('/login', function (요청, 응답) {
