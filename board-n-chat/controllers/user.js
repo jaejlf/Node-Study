@@ -1,12 +1,14 @@
+require("dotenv").config();
+
 var express = require("express"),
     passport = require("passport"),
     session = require("express-session"),
     NaverStrategy = require("passport-naver").Strategy;
 
 module.exports = function (app) {
-    var client_id = "*****************";
-    var client_secret = "*****************";
-    var callback_url = "*****************";
+    var client_id = process.env.NAVER_CLIENT_ID;
+    var client_secret = process.env.NAVER_CLIENT_SECRET;
+    var callback_url = process.env.NAVER_CALLBACK_URL;
 
     passport.serializeUser(function (user, done) {
         done(null, user);
